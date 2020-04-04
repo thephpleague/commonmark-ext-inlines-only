@@ -15,33 +15,30 @@
 namespace League\CommonMark\Ext\InlinesOnly;
 
 use League\CommonMark\Block\Element\AbstractBlock;
-use League\CommonMark\Block\Element\Document;
-use League\CommonMark\Block\Element\InlineContainerInterface;
 use League\CommonMark\Block\Renderer\BlockRendererInterface;
 use League\CommonMark\ElementRendererInterface;
+use League\CommonMark\Extension\InlinesOnly\ChildRenderer as CoreRenderer;
 
 /**
  * Simply renders child elements as-is, adding newlines as needed.
+ *
+ * @deprecated The league/commonmark-ext-inlines-only extension is now deprecated. All functionality has been moved into league/commonmark 1.3+, so use that instead.
  */
 final class ChildRenderer implements BlockRendererInterface
 {
+    private $coreRenderer;
+
+    public function __construct()
+    {
+        @trigger_error(sprintf('league/commonmark-ext-autolink is deprecated; use %s from league/commonmark 1.3+ instead', CoreRenderer::class), E_USER_DEPRECATED);
+        $this->coreRenderer = new CoreRenderer();
+    }
+
     /**
      * {@inheritdoc}
      */
     public function render(AbstractBlock $block, ElementRendererInterface $htmlRenderer, bool $inTightList = false)
     {
-        $out = '';
-
-        if ($block instanceof InlineContainerInterface) {
-            $out .= $htmlRenderer->renderInlines($block->children());
-        } else {
-            $out .= $htmlRenderer->renderBlocks($block->children());
-        }
-
-        if (!($block instanceof Document)) {
-            $out .= "\n";
-        }
-
-        return $out;
+        return $this->coreRenderer->render($block, $htmlRenderer, $inTightList);
     }
 }
